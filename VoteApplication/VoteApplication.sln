@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30104.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteApplication", "VoteApplication\VoteApplication.csproj", "{4C6665D2-EF8F-468C-BECF-7F737B8DE215}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoteApplication", "VoteApplication\VoteApplication.csproj", "{4C6665D2-EF8F-468C-BECF-7F737B8DE215}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteApplication.Repositories", "VoteApplication.Repositories\VoteApplication.Repositories.csproj", "{81AE2112-076C-4506-B321-3ABA1F0D5AAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoteApplication.Repositories", "VoteApplication.Repositories\VoteApplication.Repositories.csproj", "{81AE2112-076C-4506-B321-3ABA1F0D5AAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteApplication.Services", "VoteApplication.Services\VoteApplication.Services.csproj", "{675E807E-5E02-423E-81D7-8439456FD190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteApplication.Tests", "VoteApplication.Tests\VoteApplication.Tests.csproj", "{F8FCFE8C-782E-4D5E-944B-063501BB863F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{81AE2112-076C-4506-B321-3ABA1F0D5AAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81AE2112-076C-4506-B321-3ABA1F0D5AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81AE2112-076C-4506-B321-3ABA1F0D5AAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{675E807E-5E02-423E-81D7-8439456FD190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{675E807E-5E02-423E-81D7-8439456FD190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{675E807E-5E02-423E-81D7-8439456FD190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{675E807E-5E02-423E-81D7-8439456FD190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8FCFE8C-782E-4D5E-944B-063501BB863F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8FCFE8C-782E-4D5E-944B-063501BB863F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8FCFE8C-782E-4D5E-944B-063501BB863F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8FCFE8C-782E-4D5E-944B-063501BB863F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
