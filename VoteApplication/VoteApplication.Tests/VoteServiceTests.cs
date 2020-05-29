@@ -7,11 +7,11 @@ namespace VoteApplication.Tests
 {
     public class VoteServiceTests
     {
-        private readonly TestDatabaseHelper _testDatabaseHelper;
+        private readonly TestHelper _testDatabaseHelper;
 
         public VoteServiceTests()
         {
-            _testDatabaseHelper = new TestDatabaseHelper();
+            _testDatabaseHelper = new TestHelper();
         }
 
         [Fact]

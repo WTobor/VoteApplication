@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using VoteApplication.Services;
 using Xunit;
 
@@ -9,40 +12,64 @@ namespace VoteApplication.Tests
     {
         public ResultServiceTests()
         {
-            _testDatabaseHelper = new TestDatabaseHelper();
+            _testHelper = new TestHelper();
         }
 
-        private readonly TestDatabaseHelper _testDatabaseHelper;
+        private readonly TestHelper _testHelper;
 
         [Fact]
-        public void GetResults_WhenNoVotes_ShouldReturnEmptyResultsAsync()
+        public async Task GetResults_WhenAddedVoteAndBeforePublishTime_ShouldReturnEmptyResultsAsync()
         {
             //Arrange
-            _testDatabaseHelper.InitializeDatabase();
-            var service = new ResultService(_testDatabaseHelper.TestAppDbContext);
+            _testHelper.InitializeDatabase();
+            var voteService = new VoteService(_testHelper.TestAppDbContext);
+            var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(1));
+            var resultService =
+                new ResultService(_testHelper.TestAppDbContext, Options.Create(testAppSettings));
+            var candidate = await _testHelper.TestAppDbContext.Candidates.FirstAsync();
+            await voteService.AddVoteAsync("test1", candidate.Id);
 
             //Act
-            var result = service.GetResults();
+            var result = resultService.GetResults();
 
             //Assert
-            Assert.Equal(3, result.Count);
             Assert.True(result.TrueForAll(x => x.CandidateVoteCount == 0));
         }
 
         [Fact]
-        public async Task GetResults_WhenAddedVotes_ShouldReturnCorrectResultsAsync()
+        public async Task GetResults_WhenAddedVoteAndInPublishTime_ShouldReturnCorrectResultsAsync()
         {
             //Arrange
-            _testDatabaseHelper.InitializeDatabase();
-            var voteService = new VoteService(_testDatabaseHelper.TestAppDbContext);
-            var resultService = new ResultService(_testDatabaseHelper.TestAppDbContext);
-            var candidate1 = await _testDatabaseHelper.TestAppDbContext.Candidates.FindAsync(1);
-            var candidate2 = await _testDatabaseHelper.TestAppDbContext.Candidates.FindAsync(2);
-            var candidate3 = await _testDatabaseHelper.TestAppDbContext.Candidates.FindAsync(3);
+            _testHelper.InitializeDatabase();
+            var voteService = new VoteService(_testHelper.TestAppDbContext);
+            var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(1));
+            var resultService =
+                new ResultService(_testHelper.TestAppDbContext, Options.Create(testAppSettings));
+            var candidate = await _testHelper.TestAppDbContext.Candidates.FirstAsync();
+            await voteService.AddVoteAsync("test1", candidate.Id);
+
+            //Act
+            var result = resultService.GetResults();
+
+            //Assert
+            Assert.True(result.TrueForAll(x => x.CandidateVoteCount == 0));
+        }
+
+        [Fact]
+        public async Task GetResults_WhenAddedVotesAndAfterPublishTime_ShouldReturnCorrectResultsAsync()
+        {
+            //Arrange
+            _testHelper.InitializeDatabase();
+            var voteService = new VoteService(_testHelper.TestAppDbContext);
+            var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(-1));
+            var resultService =
+                new ResultService(_testHelper.TestAppDbContext, Options.Create(testAppSettings));
+            var candidate1 = await _testHelper.TestAppDbContext.Candidates.FindAsync(1);
+            var candidate2 = await _testHelper.TestAppDbContext.Candidates.FindAsync(2);
+            var candidate3 = await _testHelper.TestAppDbContext.Candidates.FindAsync(3);
             await voteService.AddVoteAsync("test1", candidate1.Id);
             await voteService.AddVoteAsync("test2", candidate2.Id);
             await voteService.AddVoteAsync("test3", candidate1.Id);
-
 
             //Act
             var result = resultService.GetResults();
@@ -52,6 +79,23 @@ namespace VoteApplication.Tests
             Assert.Equal(2, result.First(x => x.CandidateFullName.StartsWith(candidate1.Surname)).CandidateVoteCount);
             Assert.Equal(1, result.First(x => x.CandidateFullName.StartsWith(candidate2.Surname)).CandidateVoteCount);
             Assert.Equal(0, result.First(x => x.CandidateFullName.StartsWith(candidate3.Surname)).CandidateVoteCount);
+        }
+
+        [Fact]
+        public void GetResults_WhenNoVotesAndAfterPublishTime_ShouldReturnEmptyResultsAsync()
+        {
+            //Arrange
+            _testHelper.InitializeDatabase();
+            var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(-1));
+
+            var service = new ResultService(_testHelper.TestAppDbContext, Options.Create(testAppSettings));
+
+            //Act
+            var result = service.GetResults();
+
+            //Assert
+            Assert.Equal(3, result.Count);
+            Assert.True(result.TrueForAll(x => x.CandidateVoteCount == 0));
         }
     }
 }
