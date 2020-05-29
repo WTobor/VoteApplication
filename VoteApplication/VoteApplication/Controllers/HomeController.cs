@@ -12,9 +12,11 @@ namespace VoteApplication.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly CandidateService _candidateService;
         private readonly VoteService _voteService;
+        private readonly ResultService _resultService;
 
-        public HomeController(ILogger<HomeController> logger, CandidateService candidateService, VoteService voteService)
+        public HomeController(ILogger<HomeController> logger, CandidateService candidateService, VoteService voteService, ResultService resultService)
         {
+            _resultService = resultService;
             _logger = logger;
             _candidateService = candidateService;
             _voteService = voteService;
@@ -44,7 +46,8 @@ namespace VoteApplication.Controllers
 
         public IActionResult Results()
         {
-            return View();
+            var results = _resultService.GetResults();
+            return View(results);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

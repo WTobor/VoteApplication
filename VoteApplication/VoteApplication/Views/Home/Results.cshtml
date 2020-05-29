@@ -2,8 +2,25 @@
     ViewData["Title"] = "Results";
 }
 <h1>@ViewData["Title"]</h1>
-
+@model List<VoteApplication.Services.Models.ResultModel>
 
 <div class="text-center">
-    <p>There will be voting results</p>
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <td>@result.CandidateFullName</td>
+                <td>@result.CandidateVoteCount</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Brak wyników</p>
+}
 </div>
