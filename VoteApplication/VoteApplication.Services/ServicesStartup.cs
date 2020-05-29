@@ -13,6 +13,8 @@ namespace VoteApplication.Services
                     options.UseInMemoryDatabase("VoteApplicationDatabase"));
 
             services.AddScoped<AppDbContext>();
+
+            services.AddScoped<CandidateService>();
         }
     }
 }

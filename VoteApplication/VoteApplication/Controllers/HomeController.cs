@@ -2,20 +2,24 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VoteApplication.Models;
+using VoteApplication.Services;
 
 namespace VoteApplication.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly CandidateService _candidateService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, CandidateService candidateService)
         {
             _logger = logger;
+            _candidateService = candidateService;
         }
 
         public IActionResult Vote()
         {
+            var candidates = _candidateService.GetAllCandidates();
             return View();
         }
 
