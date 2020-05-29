@@ -15,6 +15,7 @@ namespace VoteApplication.Services
             services.AddScoped<AppDbContext>();
 
             services.AddScoped<CandidateService>();
+            services.AddScoped<VoteService>();
         }
     }
 }

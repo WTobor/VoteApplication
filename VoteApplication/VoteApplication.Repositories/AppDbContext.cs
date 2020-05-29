@@ -16,6 +16,7 @@ namespace VoteApplication.Repositories
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             AddDefaultCandidates(modelBuilder);
+            //this solution should work on sql database, but is not working on in-memory database
             modelBuilder.Entity<Vote>().HasIndex(v => v.UserNickname).IsUnique();
             modelBuilder.Entity<Vote>().HasOne(p => p.Candidate).WithMany(c => c.Votes).IsRequired();
             base.OnModelCreating(modelBuilder);
