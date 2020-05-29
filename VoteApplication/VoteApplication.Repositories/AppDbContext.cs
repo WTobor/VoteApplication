@@ -11,10 +11,13 @@ namespace VoteApplication.Repositories
         }
 
         public DbSet<Candidate> Candidates { get; set; }
+        public DbSet<Vote> Votes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             AddDefaultCandidates(modelBuilder);
+            modelBuilder.Entity<Vote>().HasIndex(v => v.UserNickname).IsUnique();
+            modelBuilder.Entity<Vote>().HasOne(p => p.Candidate).WithMany(c => c.Votes).IsRequired();
             base.OnModelCreating(modelBuilder);
         }
 

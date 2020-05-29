@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace VoteApplication.Repositories.Models
 {
@@ -12,5 +13,7 @@ namespace VoteApplication.Repositories.Models
 
         [Required]
         public string Surname { get; set; }
+
+        public virtual ICollection<Vote> Votes { get; set; }
     }
 }
