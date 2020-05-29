@@ -21,10 +21,19 @@ namespace VoteApplication.Services
         {
             try
             {
-                var userAlreadyVoted = CheckIfUserVoted(userNickname);
-                if (userAlreadyVoted)
+                if (CheckIfNickNameIsCorrect(userNickname))
+                {
+                    return Messages.NicknameCannotBeEmpty;
+                }
+
+                if (await CheckIfUserVotedAsync(userNickname))
                 {
                     return Messages.UserAlreadyVoted;
+                }
+
+                if (CheckIfCandidateExists(candidateId))
+                {
+                    return Messages.CandidateDoesNotExist;
                 }
 
                 await _dbContext.Votes.AddAsync(new Vote(userNickname, candidateId));
@@ -38,11 +47,22 @@ namespace VoteApplication.Services
             }
         }
 
-        private bool CheckIfUserVoted(string nickName)
+        private async Task<bool> CheckIfUserVotedAsync(string nickName)
         {
-            var existingVote = _dbContext.Votes.FirstOrDefaultAsync(x =>
+            var existingVote = await _dbContext.Votes.FirstOrDefaultAsync(x =>
                 string.Equals(x.UserNickname, nickName, StringComparison.InvariantCulture));
             return existingVote != null;
+        }
+
+        private static bool CheckIfNickNameIsCorrect(string nickname)
+        {
+            return string.IsNullOrWhiteSpace(nickname);
+        }
+
+        private bool CheckIfCandidateExists(int candidateId)
+        {
+            var candidate = _dbContext.Candidates.Find(candidateId);
+            return candidate == null;
         }
     }
 }

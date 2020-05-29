@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CandidateDoesNotExist" xml:space="preserve">
+    <value>Wybrany kandydat nie istnieje</value>
+  </data>
+  <data name="NicknameCannotBeEmpty" xml:space="preserve">
+    <value>Nick nie może być pusty</value>
+  </data>
   <data name="UserAlreadyVoted" xml:space="preserve">
     <value>Użytkownik o podanym nicku już oddał głos</value>
   </data>

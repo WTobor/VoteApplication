@@ -61,6 +61,24 @@ namespace VoteApplication.Services {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Wybrany kandydat nie istnieje.
+        /// </summary>
+        public static string CandidateDoesNotExist {
+            get {
+                return ResourceManager.GetString("CandidateDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nick nie może być pusty.
+        /// </summary>
+        public static string NicknameCannotBeEmpty {
+            get {
+                return ResourceManager.GetString("NicknameCannotBeEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Użytkownik o podanym nicku już oddał głos.
         /// </summary>
         public static string UserAlreadyVoted {
