@@ -5,12 +5,22 @@
 <h1>@ViewData["Title"]</h1>
 
 <div class="text-center">
-    <label for="candidate">Wybierz kandydata</label>
-    <select id="candidate">
-        <option value="0"></option>
-        @foreach (var candidate in Model)
-        {
-            <option title="@candidate.FullName" value="@candidate.Id">@candidate.FullName</option>
-        }
-    </select>
+    <form asp-action="Vote" method="post">
+
+        <label for="nickname">Podaj nick</label>
+        <input id="nickname" name="nickname" type="text" class="form-control" required>
+
+        <label for="candidate">Wybierz kandydata</label>
+        <select id="candidate" name="candidateId" class="form-control">
+            <option value=""></option>
+            @foreach (var candidate in Model)
+            {
+                <option title="@candidate.FullName" value="@candidate.Id">@candidate.FullName</option>
+            }
+        </select>
+        
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+        <button type="submit" class="btn btn-primary">Głosuj</button>
+    </form>
 </div>

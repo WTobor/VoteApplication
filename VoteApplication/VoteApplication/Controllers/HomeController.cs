@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VoteApplication.Models;
@@ -10,15 +11,33 @@ namespace VoteApplication.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly CandidateService _candidateService;
+        private readonly VoteService _voteService;
 
-        public HomeController(ILogger<HomeController> logger, CandidateService candidateService)
+        public HomeController(ILogger<HomeController> logger, CandidateService candidateService, VoteService voteService)
         {
             _logger = logger;
             _candidateService = candidateService;
+            _voteService = voteService;
         }
 
         public IActionResult Vote()
         {
+            var candidates = _candidateService.GetAllCandidates();
+            return View(candidates);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Vote(string nickname, int candidateId)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _voteService.AddVoteAsync(nickname, candidateId);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    ModelState.AddModelError(string.Empty, result);
+                }
+            }
+
             var candidates = _candidateService.GetAllCandidates();
             return View(candidates);
         }
