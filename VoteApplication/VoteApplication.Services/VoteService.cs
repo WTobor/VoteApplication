@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VoteApplication.Repositories;
 using VoteApplication.Repositories.Models;
 
@@ -20,6 +21,12 @@ namespace VoteApplication.Services
         {
             try
             {
+                var userAlreadyVoted = CheckIfUserVoted(userNickname);
+                if (userAlreadyVoted)
+                {
+                    return Messages.UserAlreadyVoted;
+                }
+
                 await _dbContext.Votes.AddAsync(new Vote(userNickname, candidateId));
                 await _dbContext.SaveChangesAsync();
                 return string.Empty;
@@ -29,7 +36,13 @@ namespace VoteApplication.Services
                 //temporary solution to return only exception message
                 return e.Message;
             }
+        }
 
+        private bool CheckIfUserVoted(string nickName)
+        {
+            var existingVote = _dbContext.Votes.FirstOrDefaultAsync(x =>
+                string.Equals(x.UserNickname, nickName, StringComparison.InvariantCulture));
+            return existingVote != null;
         }
     }
 }

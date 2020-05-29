@@ -32,7 +32,7 @@ namespace VoteApplication.Tests
         }
 
         [Fact]
-        public async Task AddVote_WithDuplicatedUserName_ShouldReturnErrorMessageAsync()
+        public async Task AddVote_WithDuplicatedUserName_ShouldReturnUserAlreadyVotedErrorMessageAsync()
         {
             //Arrange
             var service = new VoteService(_context);
@@ -43,7 +43,7 @@ namespace VoteApplication.Tests
             var result = await service.AddVoteAsync("test", candidate.Id);
 
             //Assert
-            Assert.False(string.IsNullOrEmpty(result));
+            Assert.Equal(Messages.UserAlreadyVoted, result);
         }
 
         [Fact]
