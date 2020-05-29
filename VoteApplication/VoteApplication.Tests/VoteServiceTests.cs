@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using VoteApplication.Repositories;
 using VoteApplication.Services;
 using Xunit;
 
@@ -9,15 +7,20 @@ namespace VoteApplication.Tests
 {
     public class VoteServiceTests
     {
-        private AppDbContext _context;
+        private readonly TestDatabaseHelper _testDatabaseHelper;
+
+        public VoteServiceTests()
+        {
+            _testDatabaseHelper = new TestDatabaseHelper();
+        }
 
         [Fact]
         public async Task AddVote_WithCorrectData_ShouldAddVoteAsync()
         {
             //Arrange
-            InitializeDatabase();
-            var service = new VoteService(_context);
-            var candidate = await _context.Candidates.FirstAsync();
+            _testDatabaseHelper.InitializeDatabase();
+            var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
+            var candidate = await _testDatabaseHelper.TestAppDbContext.Candidates.FirstAsync();
 
             //Act
             var result = await service.AddVoteAsync("test", candidate.Id);
@@ -30,9 +33,9 @@ namespace VoteApplication.Tests
         public async Task AddVote_WithDuplicatedUserName_ShouldReturnUserAlreadyVotedErrorMessageAsync()
         {
             //Arrange
-            InitializeDatabase();
-            var service = new VoteService(_context);
-            var candidate = await _context.Candidates.FirstAsync();
+            _testDatabaseHelper.InitializeDatabase();
+            var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
+            var candidate = await _testDatabaseHelper.TestAppDbContext.Candidates.FirstAsync();
             await service.AddVoteAsync("test", candidate.Id);
 
             //Act
@@ -46,9 +49,9 @@ namespace VoteApplication.Tests
         public async Task AddVote_WithEmptyUserName_ShouldReturnErrorMessageAsync()
         {
             //Arrange
-            InitializeDatabase();
-            var service = new VoteService(_context);
-            var candidate = await _context.Candidates.FirstAsync();
+            _testDatabaseHelper.InitializeDatabase();
+            var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
+            var candidate = await _testDatabaseHelper.TestAppDbContext.Candidates.FirstAsync();
 
             //Act
             var result = await service.AddVoteAsync(string.Empty, candidate.Id);
@@ -61,21 +64,14 @@ namespace VoteApplication.Tests
         public async Task AddVote_WithNotExistingCandidateId_ShouldReturnErrorMessageAsync()
         {
             //Arrange
-            InitializeDatabase();
-            var service = new VoteService(_context);
+            _testDatabaseHelper.InitializeDatabase();
+            var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
 
             //Act
             var result = await service.AddVoteAsync("test", -1);
 
             //Assert
             Assert.Equal(Messages.CandidateDoesNotExist, result);
-        }
-
-        private void InitializeDatabase()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseInMemoryDatabase($"TestVoteApplicationDatabase{Guid.NewGuid()}");
-            _context = new AppDbContext(optionsBuilder.Options);
         }
     }
 }
