@@ -20,7 +20,7 @@ namespace VoteApplication.Controllers
         public IActionResult Vote()
         {
             var candidates = _candidateService.GetAllCandidates();
-            return View();
+            return View(candidates);
         }
 
         public IActionResult Results()
