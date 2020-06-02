@@ -19,7 +19,7 @@ namespace VoteApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ServicesStartup.Configure(services, Configuration);
+            ServicesStartup.ConfigureServices(services, Configuration);
             services.AddControllersWithViews();
         }
 
@@ -36,6 +36,8 @@ namespace VoteApplication
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            ServicesStartup.Configure(app);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

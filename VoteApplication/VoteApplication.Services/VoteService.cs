@@ -13,45 +13,34 @@ namespace VoteApplication.Services
         public VoteService(AppDbContext dbContext)
         {
             _dbContext = dbContext;
-            //solution only for in-memory database provider https://docs.microsoft.com/en-us/ef/core/modeling/data-seeding
-            _dbContext.Database.EnsureCreated();
         }
 
         public async Task<string> AddVoteAsync(string userNickname, int candidateId)
         {
-            try
+            if (CheckIfNickNameIsCorrect(userNickname))
             {
-                if (CheckIfNickNameIsCorrect(userNickname))
-                {
-                    return Messages.NicknameCannotBeEmpty;
-                }
-
-                if (await CheckIfUserVotedAsync(userNickname))
-                {
-                    return Messages.UserAlreadyVoted;
-                }
-
-                if (CheckIfCandidateExists(candidateId))
-                {
-                    return Messages.CandidateDoesNotExist;
-                }
-
-                await _dbContext.Votes.AddAsync(new Vote(userNickname, candidateId));
-                await _dbContext.SaveChangesAsync();
-                return string.Empty;
+                return Messages.NicknameCannotBeEmpty;
             }
-            catch (Exception e)
+
+            if (await CheckIfUserVotedAsync(userNickname))
             {
-                //temporary solution to return only exception message
-                return e.Message;
+                return Messages.UserAlreadyVoted;
             }
+
+            if (CheckIfCandidateExists(candidateId))
+            {
+                return Messages.CandidateDoesNotExist;
+            }
+
+            await _dbContext.Votes.AddAsync(new Vote(userNickname, candidateId));
+            await _dbContext.SaveChangesAsync();
+            return string.Empty;
         }
 
         private async Task<bool> CheckIfUserVotedAsync(string nickName)
         {
-            var existingVote = await _dbContext.Votes.FirstOrDefaultAsync(x =>
+            return await _dbContext.Votes.AnyAsync(x =>
                 string.Equals(x.UserNickname, nickName, StringComparison.InvariantCulture));
-            return existingVote != null;
         }
 
         private static bool CheckIfNickNameIsCorrect(string nickname)

@@ -18,7 +18,7 @@ namespace VoteApplication.Tests
         public async Task AddVote_WithCorrectData_ShouldAddVoteAsync()
         {
             //Arrange
-            _testDatabaseHelper.InitializeDatabase();
+            await _testDatabaseHelper.InitializeDatabaseAsync();
             var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
             var candidate = await _testDatabaseHelper.TestAppDbContext.Candidates.FirstAsync();
 
@@ -33,7 +33,7 @@ namespace VoteApplication.Tests
         public async Task AddVote_WithDuplicatedUserName_ShouldReturnUserAlreadyVotedErrorMessageAsync()
         {
             //Arrange
-            _testDatabaseHelper.InitializeDatabase();
+            await _testDatabaseHelper.InitializeDatabaseAsync();
             var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
             var candidate = await _testDatabaseHelper.TestAppDbContext.Candidates.FirstAsync();
             await service.AddVoteAsync("test", candidate.Id);
@@ -46,10 +46,10 @@ namespace VoteApplication.Tests
         }
 
         [Fact]
-        public async Task AddVote_WithEmptyUserName_ShouldReturnErrorMessageAsync()
+        public async Task AddVote_WithEmptyUserName_ShouldReturnNicknameCannotBeEmptyErrorMessageAsync()
         {
             //Arrange
-            _testDatabaseHelper.InitializeDatabase();
+            await _testDatabaseHelper.InitializeDatabaseAsync();
             var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
             var candidate = await _testDatabaseHelper.TestAppDbContext.Candidates.FirstAsync();
 
@@ -61,10 +61,10 @@ namespace VoteApplication.Tests
         }
 
         [Fact]
-        public async Task AddVote_WithNotExistingCandidateId_ShouldReturnErrorMessageAsync()
+        public async Task AddVote_WithNotExistingCandidateId_ShouldReturnCandidateDoesNotExistErrorMessageAsync()
         {
             //Arrange
-            _testDatabaseHelper.InitializeDatabase();
+            await _testDatabaseHelper.InitializeDatabaseAsync();
             var service = new VoteService(_testDatabaseHelper.TestAppDbContext);
 
             //Act

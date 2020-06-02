@@ -2,9 +2,9 @@
 {
     public class ResultModel
     {
-        public ResultModel(string candidateFullName, int candidateVoteCount)
+        public ResultModel(string candidateSurname, string candidateName, int candidateVoteCount)
         {
-            CandidateFullName = candidateFullName;
+            CandidateFullName = string.Join(" ", candidateSurname, candidateName);
             CandidateVoteCount = candidateVoteCount;
         }
 

@@ -2,10 +2,10 @@
 {
     public class CandidateModel
     {
-        public CandidateModel(int id, string fullName)
+        public CandidateModel(int id, string surname, string name)
         {
             Id = id;
-            FullName = fullName;
+            FullName = string.Join(" ", surname, name);
         }
 
         public int Id { get; }

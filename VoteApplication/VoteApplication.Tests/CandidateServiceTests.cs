@@ -1,5 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using VoteApplication.Repositories;
+using System.Threading.Tasks;
 using VoteApplication.Services;
 using Xunit;
 
@@ -7,23 +6,22 @@ namespace VoteApplication.Tests
 {
     public class CandidateServiceTests
     {
-        private AppDbContext _context;
-
         public CandidateServiceTests()
         {
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseInMemoryDatabase("TestVoteApplicationDatabase");
-            _context = new AppDbContext(optionsBuilder.Options);
+            _testHelper = new TestHelper();
         }
 
+        private readonly TestHelper _testHelper;
+
         [Fact]
-        public void GetAllCandidates_ShouldReturn3Candidates()
+        public async Task GetAllCandidates_ShouldReturn3Candidates()
         {
             //Arrange
-            var service = new CandidateService(_context);
+            await _testHelper.InitializeDatabaseAsync();
+            var service = new CandidateService(_testHelper.TestAppDbContext);
 
             //Act
-            var result = service.GetAllCandidates();
+            var result = await service.GetAllCandidatesAsync();
 
             //Assert
             Assert.Equal(3, result.Count);

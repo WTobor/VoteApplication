@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,15 +12,15 @@ namespace VoteApplication.Services
     {
         public const string DefaultDateTimeFormat = "dd/MM/yyyy HH:mm:ss";
 
-        public static void Configure(IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services
                 .AddDbContext<AppDbContext>(options =>
                     options.UseInMemoryDatabase("VoteApplicationDatabase"));
 
-            var key = configuration.GetSection("VotingSettings");
-            ValidateResultPublicationDateTime(key.GetSection("ResultPublicationDateTimeValue").Value);
-            services.Configure<VotingSettings>(key);
+            var votingSettings = configuration.GetSection("VotingSettings");
+            ValidateResultPublicationDateTime(votingSettings.GetSection("ResultPublicationDateTimeValue").Value);
+            services.Configure<VotingSettings>(votingSettings);
 
             services.AddScoped<AppDbContext>();
 
@@ -28,11 +29,21 @@ namespace VoteApplication.Services
             services.AddScoped<ResultService>();
         }
 
+        public static void Configure(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+                //solution only for in-memory database provider https://docs.microsoft.com/en-us/ef/core/modeling/data-seeding
+                dbContext.Database.EnsureCreated();
+            }
+        }
+
         private static void ValidateResultPublicationDateTime(string resultPublicationDateTimeValue)
         {
             var correctDateTimeFormat = DateTimeOffset.TryParseExact(resultPublicationDateTimeValue, ServicesStartup.DefaultDateTimeFormat,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.None, out DateTimeOffset dateValue);
+                DateTimeStyles.None, out var dateValue);
             if (!correctDateTimeFormat)
             {
                 throw new InvalidOperationException(

@@ -21,7 +21,7 @@ namespace VoteApplication.Tests
         public async Task GetResults_WhenAddedVoteAndBeforePublishTime_ShouldReturnEmptyResultsAsync()
         {
             //Arrange
-            _testHelper.InitializeDatabase();
+            await _testHelper.InitializeDatabaseAsync();
             var voteService = new VoteService(_testHelper.TestAppDbContext);
             var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(1));
             var resultService =
@@ -30,36 +30,37 @@ namespace VoteApplication.Tests
             await voteService.AddVoteAsync("test1", candidate.Id);
 
             //Act
-            var result = resultService.GetResults();
+            var result = await resultService.GetResultsAsync();
 
             //Assert
-            Assert.True(result.TrueForAll(x => x.CandidateVoteCount == 0));
+            Assert.Empty(result);
         }
 
         [Fact]
         public async Task GetResults_WhenAddedVoteAndInPublishTime_ShouldReturnCorrectResultsAsync()
         {
             //Arrange
-            _testHelper.InitializeDatabase();
+            await _testHelper.InitializeDatabaseAsync();
             var voteService = new VoteService(_testHelper.TestAppDbContext);
-            var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(1));
+            var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now);
             var resultService =
                 new ResultService(_testHelper.TestAppDbContext, Options.Create(testAppSettings));
             var candidate = await _testHelper.TestAppDbContext.Candidates.FirstAsync();
             await voteService.AddVoteAsync("test1", candidate.Id);
 
             //Act
-            var result = resultService.GetResults();
+            var result = await resultService.GetResultsAsync();
 
             //Assert
-            Assert.True(result.TrueForAll(x => x.CandidateVoteCount == 0));
+            Assert.Equal(3, result.Count());
+            Assert.Equal(1, result.First(x => x.CandidateFullName.StartsWith(candidate.Surname)).CandidateVoteCount);
         }
 
         [Fact]
         public async Task GetResults_WhenAddedVotesAndAfterPublishTime_ShouldReturnCorrectResultsAsync()
         {
             //Arrange
-            _testHelper.InitializeDatabase();
+            await _testHelper.InitializeDatabaseAsync();
             var voteService = new VoteService(_testHelper.TestAppDbContext);
             var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(-1));
             var resultService =
@@ -72,30 +73,30 @@ namespace VoteApplication.Tests
             await voteService.AddVoteAsync("test3", candidate1.Id);
 
             //Act
-            var result = resultService.GetResults();
+            var result = await resultService.GetResultsAsync();
 
             //Assert
-            Assert.Equal(3, result.Count);
+            Assert.Equal(3, result.Count());
             Assert.Equal(2, result.First(x => x.CandidateFullName.StartsWith(candidate1.Surname)).CandidateVoteCount);
             Assert.Equal(1, result.First(x => x.CandidateFullName.StartsWith(candidate2.Surname)).CandidateVoteCount);
             Assert.Equal(0, result.First(x => x.CandidateFullName.StartsWith(candidate3.Surname)).CandidateVoteCount);
         }
 
         [Fact]
-        public void GetResults_WhenNoVotesAndAfterPublishTime_ShouldReturnEmptyResultsAsync()
+        public async Task GetResults_WhenNoVotesAndAfterPublishTime_ShouldReturnEmptyResultsAsync()
         {
             //Arrange
-            _testHelper.InitializeDatabase();
+            await _testHelper.InitializeDatabaseAsync();
             var testAppSettings = _testHelper.GetSettings(DateTimeOffset.Now.AddDays(-1));
 
             var service = new ResultService(_testHelper.TestAppDbContext, Options.Create(testAppSettings));
 
             //Act
-            var result = service.GetResults();
+            var result = await service.GetResultsAsync();
 
             //Assert
-            Assert.Equal(3, result.Count);
-            Assert.True(result.TrueForAll(x => x.CandidateVoteCount == 0));
+            Assert.Equal(3, result.Count());
+            Assert.True(result.ToList().TrueForAll(x => x.CandidateVoteCount == 0));
         }
     }
 }

@@ -22,10 +22,9 @@ namespace VoteApplication.Controllers
             _voteService = voteService;
         }
 
-        public IActionResult Vote()
+        public async Task<IActionResult> Vote()
         {
-            var candidates = _candidateService.GetAllCandidates();
-            return View(candidates);
+            return await ReturnViewWithCandidates();
         }
 
         [HttpPost]
@@ -40,13 +39,12 @@ namespace VoteApplication.Controllers
                 }
             }
 
-            var candidates = _candidateService.GetAllCandidates();
-            return View(candidates);
+            return await ReturnViewWithCandidates();
         }
 
-        public IActionResult Results()
+        public async Task<IActionResult> Results()
         {
-            var results = _resultService.GetResults();
+            var results = await _resultService.GetResultsAsync();
             return View(results);
         }
 
@@ -54,6 +52,12 @@ namespace VoteApplication.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private async Task<IActionResult> ReturnViewWithCandidates()
+        {
+            var candidates = await _candidateService.GetAllCandidatesAsync();
+            return View(candidates);
         }
     }
 }

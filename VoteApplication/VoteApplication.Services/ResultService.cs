@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using VoteApplication.Repositories;
 using VoteApplication.Services.Models;
@@ -17,27 +19,24 @@ namespace VoteApplication.Services
         {
             _dbContext = dbContext;
             _appSettings = appSettings.Value;
-            //solution only for in-memory database provider https://docs.microsoft.com/en-us/ef/core/modeling/data-seeding
-            _dbContext.Database.EnsureCreated();
         }
 
-        public List<ResultModel> GetResults()
+        public async Task<IEnumerable<ResultModel>> GetResultsAsync()
         {
-            var result = new List<ResultModel>();
-
             if (DateTimeOffset.Compare(DateTimeOffset.Now,
                 DateTimeOffset.ParseExact(_appSettings.ResultPublicationDateTimeValue,
-                    ServicesStartup.DefaultDateTimeFormat, CultureInfo.InvariantCulture)) >= 0)
+                    ServicesStartup.DefaultDateTimeFormat, CultureInfo.InvariantCulture)) < 0)
             {
-                foreach (var candidate in _dbContext.Candidates)
-                {
-                    var candidateVoteCount = _dbContext.Votes.Count(x => x.CandidateId == candidate.Id);
-                    result.Add(new ResultModel(string.Join(" ", candidate.Surname, candidate.Name),
-                        candidateVoteCount));
-                }
+                return new List<ResultModel>();
             }
 
-            return result;
+            //solution to fix Unable to cast object of type 'System.Linq.Expressions.NewExpression' to type 'System.Linq.Expressions.MethodCallExpression' exception 
+            //return await _dbContext.Candidates.Include(x => x.Votes).Select(x =>
+            //    new ResultModel(x.Surname, x.Name, x.Votes.Count)).ToListAsync();
+            return (await _dbContext.Candidates.Include(x => x.Votes)
+                .Select(x => new {surname = x.Surname, name = x.Name, votesCount = x.Votes.Count })
+                .ToListAsync())
+                .Select(y => new ResultModel(y.surname, y.name, y.votesCount));
         }
     }
 }

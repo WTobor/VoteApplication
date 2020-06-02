@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VoteApplication.Repositories;
 using VoteApplication.Services;
@@ -10,11 +11,12 @@ namespace VoteApplication.Tests
     {
         public AppDbContext TestAppDbContext;
 
-        public void InitializeDatabase()
+        public async Task InitializeDatabaseAsync()
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseInMemoryDatabase($"TestVoteApplicationDatabase{Guid.NewGuid()}");
             TestAppDbContext = new AppDbContext(optionsBuilder.Options);
+            await TestAppDbContext.Database.EnsureCreatedAsync();
         }
 
         public VotingSettings GetSettings(DateTimeOffset dateTimeOffset)

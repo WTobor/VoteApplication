@@ -2,10 +2,10 @@
     ViewData["Title"] = "Results";
 }
 <h1>@ViewData["Title"]</h1>
-@model List<VoteApplication.Services.Models.ResultModel>
+@model IEnumerable<VoteApplication.Services.Models.ResultModel>
 
 <div class="text-center">
-@if (Model != null && Model.Count > 0)
+@if (Model != null && Model.Any())
 {
     <table class="table">
         <tbody>
